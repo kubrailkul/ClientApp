@@ -1,0 +1,46 @@
+
+<div class="row">
+    <div class="col-md-7">
+        <h3 class="bg-primary text-white p-2">{{getName()}} Kategorisi</h3>
+        <table class="table table-bordered table-stripped">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of productList" >
+              
+              <td [ngClass]="item.isActive? 'bg-primary':''">{{item.isActive}} {{item.id}}</td>
+              <td [ngClass]="item.isActive? 'bg-primary':''">{{item.name}}</td>
+              <td [ngClass]="item.isActive? 'bg-primary':''">{{item.price}} $</td>
+              <td [ngClass]="item.isActive? 'bg-primary':''"><button class="btn btn-primary mr-2" (click)="selectedProduct=item">Edit</button>
+                <button class="btn btn-danger">Delete</button>
+              </td>
+        
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="col-md-5">
+           
+                <div class="form-group">
+                  <label for="">name</label>
+                  <input type="text" class="form-control" id="exampleInputEmail1"  #name>
+                </div>
+                <div class="form-group">
+                  <label for="">price</label>
+                  <input type="text" class="form-control" id="exampleInputPassword1" #price>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1" #chbIsActive>
+                  </div>
+                <button type="submit" class="btn btn-primary" (click)="addProduct(name.value,price.value,chbIsActive.checked);name.value='';price.value='';chbIsActive.checked=false">Save Product</button>
+ <app-product-detail [product]="selectedProduct" (countChange)="handleCountChange($event)"></app-product-detail>
+ <p>Sayaç Değeri: {{ counterValue }}</p>
+        </div>
+</div>
+
