@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Model, Product } from '../Model';
 import { ProductService } from '../product.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-products',
@@ -9,18 +10,27 @@ import { ProductService } from '../product.service';
 })
 export class ProductsComponent {
 
-  title = 'SocialApp';
+  title = 'App';
   categoryName="Telefon";
-  item:Model=new Model();
+  item:Product=new Product();
   productList:Product[]=[];
-  selectedProduct!:Product;
+  selectedProduct:Product=new Product();
+  
   constructor (private productService:ProductService){
 
   }  
 
 
   ngOnInit():void{
-    this.productList=this.productService.getProduct();
+   this.getProducts();
+  }
+
+  getProducts() {
+     this.productService.getProduct().subscribe(products=>
+      {
+          this.productList=products;
+      }
+      );
   }
 
   model=new Model();
@@ -29,12 +39,62 @@ export class ProductsComponent {
     return this.model.categoryName;
   }
 
-  addProduct(name:any,price:any,isActive:boolean){
+   addProduct(){
+    debugger;
+    try {
+      if(!this.selectedProduct.id){
+        var result= this.productService.addProduct(this.selectedProduct).subscribe();
+        Swal.fire("Ürün başarıyla eklendi");
+      } 
+    else{
+      var result= this.productService.updateProduct(this.selectedProduct).subscribe();
+      Swal.fire("Ürün başarıyla güncellendi");
+    }
+ 
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Hata meydana geldi",
+      });
+    }finally{
+     this.item=new Product();
+     this.getProducts();
+    }  
 
-    const p=new Product(this.productService.getProduct().length+1,name,price,isActive)
-    this.productService.addProduct(p);
-  }
+   }
 
+
+   editProduct(item:any){
+    this.selectedProduct=Object.assign(item);
+   }
+
+   async deleteProduct(item:any){
+    Swal.fire({
+      title: "Product will be deleted. Are you sure?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        try {
+          this.productService.deleteProduct(item.id);
+          Swal.fire("Product succesfully deleted");
+        } catch (error) {
+          console.log(error);
+        } finally{
+          this.getProducts();
+        }   
+      } else if (result.isDenied) {
+ 
+      }
+    });
+
+  
+
+   }
 
   counterValue = 0;
 
